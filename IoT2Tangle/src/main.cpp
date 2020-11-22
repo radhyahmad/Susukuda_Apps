@@ -33,8 +33,8 @@ static char payload[500];
 static dataSense data;
 
 
-const char* ssid = "LANTAI BAWAH 2";
-const char* password = "ibudini17";
+const char* ssid = "SSID";
+const char* password = "PASSWORD";
 
 const char mqtt_server[] = "192.168.0.105";
 const char publishTopic[] = "iot2tangle/sensor/susukuda"; 
