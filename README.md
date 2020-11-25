@@ -11,3 +11,6 @@ Streams-mqtt-gateway-master is source code for data streams to the tangle, you c
 
 You can watch the demo of our deployment: 
 https://www.youtube.com/watch?v=7BrRxYLfog0&feature=youtu.be
+
+You can read this
+https://github.com/radhyahmad/Susukuda_Apps/wiki
