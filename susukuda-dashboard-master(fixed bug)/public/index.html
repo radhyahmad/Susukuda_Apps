@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="eBike Web App">
+    <meta name="author" content="prajadimas">
+    <title>SusuKuda - Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="https://innotoma.fra1.cdn.digitaloceanspaces.com/sb-admin-2/sb-admin-2.min.css">
+  </head>
+  <body id="page-top">
+    <div id="wrapper">
+      <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard">
+          <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas fa-laugh-wink"></i>
+          </div>
+          <div class="sidebar-brand-text mx-3">SusuKuda</div>
+        </a>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/dashboard">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <hr class="sidebar-divider">
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+      </ul>
+      <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+          <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+              <i class="fa fa-bars"></i>
+            </button>
+            <ul class="navbar-nav ml-auto">
+              <div class="topbar-divider d-none d-sm-block"></div>
+              <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <img class="img-profile rounded-circle" src="https://cdn4.iconfinder.com/data/icons/general-office/91/General_Office_33-512.png">
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <div class="container-fluid">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+              <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            </div>
+            <div class="row">
+              <div class="col" id="loader">Loading (it may take forever) ...</div>
+              <div class="col" id="susuProp"></div>
+            </div>
+          </div>
+        </div>
+        <footer class="sticky-footer bg-white">
+          <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+              <span id="copyrightContent">Copyright &copy; prajadimas</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js"></script>
+    <script src="https://innotoma.fra1.cdn.digitaloceanspaces.com/sb-admin-2/sb-admin-2.min.js"></script>
+    <script>
+
+      (function ($) {
+        "use strict"; // Start of use strict
+        $("#susuProp").hide();
+        $("#loader").show();
+        var data = {};
+        var countProp = 0;
+        $.ajax({
+          url: "/v1/dashboard",
+          type: "GET",
+          encode: true,
+          success: function (resp) {
+            $("#susuProp").show();
+            $("#loader").hide();
+            data = resp.data;
+            countProp = Object.keys(resp.data.byProp).length;
+            console.log("Data: ", resp.data);
+            console.log("Length: ", Object.keys(resp.data.byProp).length);
+            for (var i = 0; i < Object.keys(resp.data.byProp).length; i++) {
+              $("#susuProp").append("<div class=\"card shadow mb-4\"><div class=\"card-header py-3 d-flex flex-row align-items-center justify-content-between\"><h6 class=\"m-0 font-weight-bold text-primary\">" + Object.keys(resp.data.byProp)[i] + "</h6></div><div class=\"card-body collapse show\" id=\"collapseCard" + (i + 1) + "\"><div id=\"myChart" + (i + 1) + "\"></div></div></div>");
+            }
+          },
+          error: function (err) {
+            console.error(err);
+          }
+        }).done(function () {
+          var timeStamp = []
+          for (var i = 0; i < data["byTimestamp"].length; i++) {
+            timeStamp.push(moment(new Date((data["byTimestamp"][i].timestamp * 1000))).format());
+          }
+          console.log("Timestamp: ", timeStamp);
+          for (var i = 0; i < countProp; i++) {
+            var trace = {
+              x: timeStamp,
+              y: data.byProp[Object.keys(data.byProp)[i]]["y"],
+              mode: "markers",
+              type: "scatter",
+              marker: { size: 6 }
+            };
+            var layout = {
+              xaxis: {
+                title: {
+                  text: "timestamp"
+                }
+              },
+              yaxis: {
+                title: {
+                  text: Object.keys(data.byProp)[i]
+                }
+              },
+            };
+            Plotly.newPlot("myChart" + (i + 1), [trace], layout);
+          }
+        });
+
+      })(jQuery); // End of use strict
+
+    </script>
+  </body>
+</html>
