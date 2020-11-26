@@ -10,7 +10,7 @@ Precise sensing is a IoT monitoring system using ESP32 Lolin to collect and meas
 Streams-mqtt-gateway-master is source code for data streams to the tangle, you can download on https://github.com/iot2tangle/Streams-mqtt-gateway.
 
 You can watch the demo of our deployment: 
-https://drive.google.com/file/d/1dfsU4btiwlPvuycZ6DFoHEpluOU6gWmQ/view
+https://www.youtube.com/watch?v=7BrRxYLfog0
 
 
 
